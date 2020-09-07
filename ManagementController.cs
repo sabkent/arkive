@@ -10,7 +10,7 @@ namespace heroku
         [HttpGet, Route("")]
         public IActionResult Get()
         {
-            return Ok("success");
+            return Ok("this has changed");
         }
     }
 }
