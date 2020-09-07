@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build docker image
+        env: 
+          APP_NAME: ${{'arkive'}}
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
+          heroku container:push web -a $APP_NAME
+          heroku container:release web -a $APP_NAME
