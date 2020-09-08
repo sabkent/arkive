@@ -26,11 +26,13 @@
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
+            .WithAutomaticReconnect()
             .WithUrl(NavigationManager.ToAbsoluteUri("/hubs/myhub"), options =>
             {
                 //https://stackoverflow.com/questions/60745737/failed-to-connect-to-signalr-in-blazor-webassembly
                 options.SkipNegotiation = true;
                 options.Transports = HttpTransportType.WebSockets;
+                
             })
             .Build();
 
