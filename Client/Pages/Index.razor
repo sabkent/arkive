@@ -1,5 +1,51 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@using pws.Shared.Hubs
+@using Microsoft.AspNetCore.Http.Connections
+@inject NavigationManager NavigationManager
+@implements IDisposable
 
 <h1>Hello, world!</h1>
 
-changed text and smudged service worker
+<ul id="messagesList">
+    @foreach (var message in messages)
+    {
+    <li>@message</li>
+    }
+</ul>
+
+
+@code {
+
+    private HubConnection hubConnection;
+	 
+    public bool IsConnected => hubConnection.State == HubConnectionState.Connected;
+
+    private List<string> messages = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri(ConfigurationSettings.HubUrl), options =>
+            {
+                //https://stackoverflow.com/questions/60745737/failed-to-connect-to-signalr-in-blazor-webassembly
+                options.SkipNegotiation = true;
+                options.Transports = HttpTransportType.WebSockets;
+            })
+            .Build();
+
+        hubConnection.On<string>("SpreadAsync", (content) =>
+        {
+            messages.Add(content);
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+
+    }
+
+    public void Dispose()
+    {
+        _ = hubConnection?.DisposeAsync();
+    }
+}
