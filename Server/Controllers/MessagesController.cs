@@ -23,5 +23,17 @@ namespace pws.Server.Controllers
             await _hubContext.Clients.All.SpreadAsync("Some message");
             return Ok("your mom");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody]Command command)
+        {
+            await _hubContext.Clients.All.SpreadAsync(command.Message);
+            return Accepted();
+        }
+    }
+
+    public class Command
+    {
+        public string Message { get; set; }
     }
 }
