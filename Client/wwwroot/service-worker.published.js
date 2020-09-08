@@ -46,3 +46,6 @@ async function onFetch(event) {
 
     return cachedResponse || fetch(event.request);
 }
+
+
+/*this is a timestamp to show browser service worker has changed*/
