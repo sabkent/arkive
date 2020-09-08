@@ -1,0 +1,25 @@
+﻿@page "/workmanagement"
+@using pws.Shared.Domain
+@using pws.Shared.ReadModels
+@inject HttpClient Http
+
+@if (Workers == null)
+{
+    <h1>loading</h1>
+}
+else
+{
+    @foreach (var worker in Workers)
+    {
+        <div>@worker.Name</div>
+    }
+}
+
+@code {
+    private List<V1.Worker> Workers { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Workers = await Http.GetFromJsonAsync<List<V1.Worker>>("workers");
+    }
+}
