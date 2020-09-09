@@ -5,15 +5,12 @@
 @inject NavigationManager NavigationManager
 @implements IDisposable
 
-<h1>Hello, world!</h1>
-
 <ul id="messagesList">
     @foreach (var message in messages)
     {
     <li>@message</li>
     }
 </ul>
-
 
 @code {
 
@@ -26,7 +23,7 @@
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
-            .WithAutomaticReconnect()
+            .WithAutomaticReconnect(RetryForeverPolicy.Create())
             .WithUrl(NavigationManager.ToAbsoluteUri("/hubs/myhub"), options =>
             {
                 //https://stackoverflow.com/questions/60745737/failed-to-connect-to-signalr-in-blazor-webassembly

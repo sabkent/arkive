@@ -48,4 +48,8 @@ async function onFetch(event) {
     return cachedResponse || fetch(event.request);
 }
 
+async function returnVersion() {
+    return "1.0";
+}
+
 //smudge
