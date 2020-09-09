@@ -7,8 +7,6 @@ COPY . .
 FROM build AS publish
 WORKDIR /src/Server
 RUN dotnet publish -c Release -o /src/publish
-COPY ./Server/workmanagement.db ./src/publish
-RUN dotnet ef database update --project ./server/pws.server.csproj
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
 WORKDIR /app
