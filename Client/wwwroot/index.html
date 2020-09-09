@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -21,7 +21,14 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
-    <script>navigator.serviceWorker.register('service-worker.js');</script>
+    <script>
+        navigator.serviceWorker.register('service-worker.js').then(constantUpdate);
+
+        function constantUpdate(reg) {
+            reg.update();
+            setTimeout(constantUpdate, 1000 * 60);
+        }
+    </script>
 </body>
 
 </html>
