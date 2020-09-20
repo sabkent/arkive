@@ -8,7 +8,15 @@
 <ul id="messagesList">
     @foreach (var message in messages)
     {
-    <li>@message</li>
+        <li>@message</li>
+    }
+</ul>
+
+<button @onclick="ShowHubState" >hub state</button>
+<ul id="diagnostics">
+    @foreach (var diag in diagnostics)
+    {
+        <li>@diag</li>
     }
 </ul>
 
@@ -19,6 +27,7 @@
     public bool IsConnected => hubConnection.State == HubConnectionState.Connected;
 
     private List<string> messages = new List<string>();
+    private List<string> diagnostics = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -33,6 +42,24 @@
             })
             .Build();
 
+        hubConnection.Closed += exception =>
+        {
+            diagnostics.Add($"connection closed {exception}");
+            return Task.CompletedTask;
+        };
+
+        hubConnection.Reconnected += s =>
+        {
+            diagnostics.Add($"reconnected {s}");
+            return Task.CompletedTask;
+        };
+
+        hubConnection.Reconnecting += exception =>
+        {
+            diagnostics.Add($"reconnecting {exception}");
+            return Task.CompletedTask;
+        };
+
         hubConnection.On<string>("SpreadAsync", (content) =>
         {
             messages.Add(content);
@@ -41,6 +68,11 @@
 
         await hubConnection.StartAsync();
 
+    }
+
+    public void ShowHubState()
+    {
+        diagnostics.Add($"State: {hubConnection?.State}");
     }
 
     public void Dispose()

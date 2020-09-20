@@ -4,6 +4,7 @@ using pws.Server.Infrastructure;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Npgsql;
 using pws.Shared.Domain;
 using pws.Shared.ReadModels;
 
@@ -16,6 +17,25 @@ namespace pws.Server.Controllers
 
         public WorkersController(WorkManagement workManagement)
         {
+            var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+            var databaseUri = new Uri(databaseUrl);
+            var userInfo = databaseUri.UserInfo.Split(':');
+
+            var builder = new NpgsqlConnectionStringBuilder
+            {
+                Host = databaseUri.Host,
+                Port = databaseUri.Port,
+                Username = userInfo[0],
+                Password = userInfo[1],
+                Database = databaseUri.LocalPath.TrimStart('/')
+            };
+
+            var connString =  builder.ToString();
+            
+            NpgsqlConnection connect = new NpgsqlConnection(connString);
+
+            connect.Open();
             _workManagement = workManagement;
         }
 
